@@ -1,0 +1,19 @@
+version: "3"
+
+name: sql-sever
+
+services:
+  sql-sever:
+    container_name: sql-sever-db
+    restart: unless-stopped
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "StrongPassword123!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+volumes:
+  mssql-data:

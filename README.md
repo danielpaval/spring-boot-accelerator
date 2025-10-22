@@ -27,6 +27,7 @@ The demo implementation showcases a course enrollment system with users, courses
   - [ ] ApplicationEvent
   - [ ] ExcelExportable
 - [ ] entityManager in mapper -> common
+- [ ] SQL init script & Liquibase
 
 - @ManyToOne(fetch =  FetchType.LAZY)
 - 
