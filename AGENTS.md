@@ -1,36 +1,39 @@
 # Repository Guidelines
 
-## Project Structure & Modules
-- `src/main/java`: Application code under `com.example.*` (controllers, services, repositories, mappers, DTOs).
-- `src/main/resources`: Config (`application.yml`, profiles), `openapi.yml`, GraphQL schema files.
-- `src/test/java`: Unit/integration tests mirroring main packages; fixtures in `src/test/resources`.
-- Root: `build.gradle`, `gradlew*` (Gradle), `docker-compose.yml`, `api.rest` (HTTP client), `docs/`, `scripts/`.
+## Project Structure & Module Organization
+- `src/main/java`: Code under `com.example.*` (controllers, services, repositories, mappers, DTOs).
+- `src/main/resources`: `application.yml`, profile overrides, `openapi.yml`, GraphQL schemas.
+- `src/test/{java,resources}`: Tests mirroring main packages and test fixtures.
+- Root: `build.gradle`, `gradlew*`, `docker-compose.yml`, `api.rest`, `docs/`, `scripts/`.
 
-## Build, Test, Run
-- Build: `./gradlew build` — compiles, runs tests, creates artifact.
-- Run: `./gradlew bootRun -Dspring.profiles.active=dev` — starts API on `http://localhost:8080`.
-- Tests: `./gradlew test` — executes JUnit 5 suite (incl. Testcontainers when enabled).
-- OpenAPI: `./gradlew openApiGenerate` — regenerates stubs from `src/main/resources/openapi.yml` (also run before compile).
-- Infra: `docker compose up -d` — starts local dependencies from `docker-compose.yml`.
+## Build, Test, and Development Commands
+- Build: `./gradlew build` — compile, run tests, package.
+- Run (dev): `./gradlew bootRun -Dspring.profiles.active=dev` — API at `http://localhost:8080`.
+- Test: `./gradlew test` — JUnit 5; filter with `--tests 'com.example..*'`.
+- OpenAPI: `./gradlew openApiGenerate` — regenerate interfaces from `src/main/resources/openapi.yml`.
+- Infra: `docker compose up -d` — start local MSSQL/Keycloak as defined.
 
-## Coding Style & Naming
-- Java 21, Spring Boot 3; 4-space indentation; meaningful names; small, cohesive methods.
-- Use Lombok annotations for boilerplate; MapStruct for `*Mapper` classes.
+## Coding Style & Naming Conventions
+- Java 21, Spring Boot 3; 4-space indentation; cohesive, small methods.
+- Lombok for boilerplate; MapStruct for `*Mapper` implementations.
 - Package by feature under `com.example.demo.*`.
-- Conventions: `*Controller`, `*Service`, `*Repository`, `*Dto`, `*Mapper`, `*Specification`.
+- Names: `*Controller`, `*Service`, `*Repository`, `*Dto`, `*Mapper`, `*Specification`.
+
+## Architecture Overview
+- Layered: controllers → services → repositories; DTOs mapped via MapStruct.
+- Persistence: Spring Data JPA with MSSQL; auditing via Envers.
+- API surfaces: REST (Spring MVC), GraphQL, and OpenAPI-generated interfaces.
+- Security: OAuth2 Resource Server; local testing assumes Keycloak on `:8180`.
 
 ## Testing Guidelines
-- Frameworks: JUnit 5, Spring Boot Test, Testcontainers (MSSQL).
-- Location: tests mirror source packages; class names end with `*Test`.
-- Run all: `./gradlew test`; filter: `./gradlew test --tests 'com.example..*'`.
-- Target: cover service, repository, and web layers; prefer slice tests where applicable.
+- Stack: JUnit 5, Spring Boot Test, Testcontainers (MSSQL).
+- Structure: tests mirror source packages; class names end with `*Test`.
+- Run: `./gradlew test`; prefer slice tests where valuable; add integration tests for repositories/services.
 
-## Commit & PR Guidelines
-- Commits: imperative, concise subject (e.g., "Add course pagination"); add body for context.
+## Commit & Pull Request Guidelines
+- Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:` (e.g., `feat: add course pagination`).
 - Branches: `feature/<short-desc>` or `fix/<short-desc>`.
-- PRs: clear description, linked issues, screenshots or logs for API flows, note config changes, and update docs.
-- Quality gate: ensure `./gradlew build` passes before requesting review.
+- PR checklist: description with rationale, linked issues, tests updated/added, screenshots or logs for API flows, config changes documented, `./gradlew build` passing.
 
-## Security & Configuration
-- Never commit secrets; use `.env` and `application-*.yml` for local overrides; see `.env.example`.
-- Defaults: API on `8080`; Keycloak expected on `8180` for local tests (see `docs/testing-guide.md`). Ensure OIDC settings match your active profile.
+## Security & Configuration Tips
+- Never commit secrets; use `.env` and `application-*.yml` for local overrides; start from `.env.example`.
