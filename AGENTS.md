@@ -1,118 +1,36 @@
-# WARP.md
+# Repository Guidelines
 
-This file provides guidance to WARP (warp.dev) when working with code in this repository.
+## Project Structure & Modules
+- `src/main/java`: Application code under `com.example.*` (controllers, services, repositories, mappers, DTOs).
+- `src/main/resources`: Config (`application.yml`, profiles), `openapi.yml`, GraphQL schema files.
+- `src/test/java`: Unit/integration tests mirroring main packages; fixtures in `src/test/resources`.
+- Root: `build.gradle`, `gradlew*` (Gradle), `docker-compose.yml`, `api.rest` (HTTP client), `docs/`, `scripts/`.
 
-## Development Commands
+## Build, Test, Run
+- Build: `./gradlew build` — compiles, runs tests, creates artifact.
+- Run: `./gradlew bootRun -Dspring.profiles.active=dev` — starts API on `http://localhost:8080`.
+- Tests: `./gradlew test` — executes JUnit 5 suite (incl. Testcontainers when enabled).
+- OpenAPI: `./gradlew openApiGenerate` — regenerates stubs from `src/main/resources/openapi.yml` (also run before compile).
+- Infra: `docker compose up -d` — starts local dependencies from `docker-compose.yml`.
 
-### Building and Running
-```bash
-# Build the project
-.\gradlew build
+## Coding Style & Naming
+- Java 21, Spring Boot 3; 4-space indentation; meaningful names; small, cohesive methods.
+- Use Lombok annotations for boilerplate; MapStruct for `*Mapper` classes.
+- Package by feature under `com.example.demo.*`.
+- Conventions: `*Controller`, `*Service`, `*Repository`, `*Dto`, `*Mapper`, `*Specification`.
 
-# Run the application
-.\gradlew bootRun
+## Testing Guidelines
+- Frameworks: JUnit 5, Spring Boot Test, Testcontainers (MSSQL).
+- Location: tests mirror source packages; class names end with `*Test`.
+- Run all: `./gradlew test`; filter: `./gradlew test --tests 'com.example..*'`.
+- Target: cover service, repository, and web layers; prefer slice tests where applicable.
 
-# Run with specific profile
-.\gradlew bootRun --args='--spring.profiles.active=dev'
-```
+## Commit & PR Guidelines
+- Commits: imperative, concise subject (e.g., "Add course pagination"); add body for context.
+- Branches: `feature/<short-desc>` or `fix/<short-desc>`.
+- PRs: clear description, linked issues, screenshots or logs for API flows, note config changes, and update docs.
+- Quality gate: ensure `./gradlew build` passes before requesting review.
 
-### Testing
-```bash
-# Run all tests
-.\gradlew test
-
-# Run specific test class
-.\gradlew test --tests "UserServiceTest"
-
-# Run tests with Testcontainers
-.\gradlew test -Dspring.profiles.active=test
-
-# Run tests with detailed output
-.\gradlew test --info
-```
-
-### Development Tools
-```bash
-# Clean build artifacts
-.\gradlew clean
-
-# Generate sources (MapStruct mappers)
-.\gradlew compileJava
-
-# Check dependencies
-.\gradlew dependencies
-
-# View project tasks
-.\gradlew tasks
-```
-
-## Architecture Overview
-
-### Core Architecture Pattern
-This is a **layered Spring Boot API** following Domain-Driven Design principles with:
-
-- **Common Framework Layer**: Reusable abstractions for entities, DTOs, services, and repositories
-- **Demo Domain Layer**: Specific business logic for User and Course entities
-- **Security Integration**: OAuth2 JWT-based authentication with Keycloak
-- **Audit Trail**: Hibernate Envers for entity versioning and change tracking
-- **API Technologies**: REST endpoints, GraphQL queries, and comprehensive validation
-
-### Key Architectural Components
-
-#### Abstract Base Classes (Common Framework)
-- `AbstractCommonEntity<T>`: Base entity with ID, version, and common fields
-- `AbstractAutoIncrementCommonEntity`: Auto-increment ID variant
-- `AbstractCommonDto<T>`: Base DTO with ID field
-- `AbstractCommonService<ID, ENTITY, DTO, PATCH_DTO>`: CRUD operations with validation and soft deletion
-- `CommonRepository<ID, ENTITY>`: Repository interface with Envers support
-- `CommonMapper<ID, ENTITY, DTO, PATCH_DTO>`: MapStruct-based mapping interface
-
-#### Entity Patterns
-- **Soft Deletion**: Entities implementing `DeletableEntity` are marked as deleted rather than physically removed
-- **Audit Tracking**: All entities are `@Audited` with Hibernate Envers for revision history
-- **User Tracking**: Entities track `createdBy` and `updatedBy` relationships
-- **Version Control**: Optimistic locking via `@Version` annotation
-
-#### Service Layer Patterns
-- Services extend `AbstractCommonService` for consistent CRUD operations
-- Automatic validation using Bean Validation (`@Valid`) with custom constraints
-- Security context integration via `SecurityUtils` for user tracking
-- Role-based access control for sensitive operations (e.g., name changes require ADMIN role)
-
-#### DTO and Mapping Strategy
-- **Full DTOs**: Complete object representation for standard operations
-- **Patch DTOs**: `JsonNullable<T>` fields for partial updates (PATCH operations)
-- **Custom Validators**: `@NotBlankIfPresent` for conditional validation on patch operations
-- **MapStruct Integration**: Automatic mapping between entities and DTOs with Lombok integration
-
-#### API Design Patterns
-- **RESTful Endpoints**: Standard CRUD + domain-specific search operations
-- **GraphQL Integration**: Query-based data fetching with custom scalars
-- **Audit Endpoints**: Revision history access per entity (`/revisions`, `/revisions/{id}`, `/revisions/latest`)
-- **Security Annotations**: Method-level security with `@PreAuthorize`
-
-### Technology Stack Integration
-- **Database**: SQL Server with Hibernate ORM
-- **Security**: Spring Security + OAuth2 Resource Server (Keycloak JWT)
-- **Validation**: Bean Validation with custom validators
-- **Documentation**: OpenAPI 3 (Swagger UI available)
-- **Development**: Spring Boot DevTools with hot reloading
-- **Testing**: Spring Boot Test + Testcontainers for integration testing
-
-### Environment Configuration
-- **Profiles**: `dev`, `test` configurations in `application-{profile}.yml`
-- **External Config**: Environment variables for database and JWT issuer URIs
-- **Database URL**: `jdbc:sqlserver://localhost:1433;databaseName=master`
-- **JWT Issuer**: `http://localhost:8180/realms/dev` (Keycloak)
-
-### Development Workflow
-1. **API Testing**: Use `api.rest` file with environment variables in `http-client.env.json`
-2. **Database Schema**: Auto-generated via `hibernate.ddl-auto=update`
-3. **Security**: Obtain JWT tokens via Keycloak for USER/ADMIN roles
-4. **GraphQL**: GraphiQL interface available for query development
-5. **Audit Queries**: Use revision endpoints to track entity changes over time
-
-### Windows Development Notes
-- Always use `.\gradlew` (with backslash) for Gradle wrapper on Windows
-- Use semicolons (`;`) to separate terminal commands in PowerShell
-- SQL Server connection requires `encrypt=false;trustServerCertificate=true` for local development
+## Security & Configuration
+- Never commit secrets; use `.env` and `application-*.yml` for local overrides; see `.env.example`.
+- Defaults: API on `8080`; Keycloak expected on `8180` for local tests (see `docs/testing-guide.md`). Ensure OIDC settings match your active profile.
