@@ -1,6 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
+- The project is partitioned into a common, reusable package (`src/main/java/com/example/common`) and a demo implementation (`src/main/java/com/example/demo`).
 - `src/main/java`: Code under `com.example.*` (controllers, services, repositories, mappers, DTOs).
 - `src/main/resources`: `application.yml`, profile overrides, `openapi.yml`, GraphQL schemas.
 - `src/test/{java,resources}`: Tests mirroring main packages and test fixtures.

@@ -4,7 +4,7 @@ This document provides context for the Gemini AI to understand the project struc
 
 ## Project Overview
 
-This is a Spring Boot project that serves as a demonstration and a reusable commons package for building modern REST APIs. It showcases a course enrollment system with users, courses, categories, and enrollments.
+This is a Spring Boot project that serves as a demonstration and a reusable commons package for building modern REST APIs. The source code is partitioned into a common, reusable package (`src/main/java/com/example/common`) and a demo implementation (`src/main/java/com/example/demo`). It showcases a course enrollment system with users, courses, categories, and enrollments.
 
 The project uses the following main technologies:
 - **Java 21**
