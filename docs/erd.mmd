@@ -1,0 +1,38 @@
+```mermaid
+erDiagram
+    USER {
+        int id PK
+        string name
+        boolean deleted
+    }
+
+    COURSE {
+        int id PK
+        string name
+        date start_date
+        string category_code FK
+        int teacher FK
+        int created_by FK
+        int updated_by FK
+    }
+
+    CATEGORY {
+        string code PK
+        string name
+    }
+
+    ENROLLMENT {
+        int user_id PK, FK
+        int course_id PK, FK
+        datetime date
+        string grade
+    }
+
+    USER ||--o{ COURSE : "teaches"
+    USER ||--o{ COURSE : "created by"
+    USER ||--o{ COURSE : "updated by"
+    USER ||--|{ ENROLLMENT : "enrolls in"
+    COURSE ||--|{ ENROLLMENT : "has"
+    CATEGORY ||--|{ COURSE : "categorizes"
+```
+
