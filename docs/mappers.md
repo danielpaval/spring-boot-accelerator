@@ -222,9 +222,6 @@ public abstract class CourseMapper implements CommonMapper<Long, Course, CourseD
         coursePatchDto.getStartDate().ifPresent(course::setStartDate);
     }
 }
-#### [`EnrollmentMapper`](../src/main/java/com/example/demo/mapper/EnrollmentMapper.java)
-
-```
 
 ### Composite Key Mapper
 
