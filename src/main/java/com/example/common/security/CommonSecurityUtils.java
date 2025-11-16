@@ -91,11 +91,15 @@ public class CommonSecurityUtils {
 
         // Handle string-to-number conversions
         if (current instanceof String) {
-            if (type == Long.class) {
-                return type.cast(Long.valueOf((String) current));
-            }
-            if (type == Integer.class) {
-                return type.cast(Integer.valueOf((String) current));
+            try {
+                if (type == Long.class) {
+                    return type.cast(Long.valueOf((String) current));
+                }
+                if (type == Integer.class) {
+                    return type.cast(Integer.valueOf((String) current));
+                }
+            } catch (NumberFormatException e) {
+                return null;
             }
         }
 
