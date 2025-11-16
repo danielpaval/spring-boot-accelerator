@@ -1,75 +1,73 @@
-# Project Overview
+# Gemini Code-writing Context
 
-This is a Spring Boot API demo project that manages users and courses. It provides a RESTful API and a GraphQL API for interacting with the data. The project is built with Java 21 and Gradle.
+This document provides context for the Gemini AI to understand the project structure, conventions, and tasks.
 
-## Main Technologies
+## Project Overview
 
-*   **Backend:** Spring Boot, Java 21
-*   **Data:** Spring Data JPA, SQL Server, Hibernate Envers for auditing
-*   **API:** REST, GraphQL
-*   **Security:** Spring Security with OAuth2/JWT (Keycloak)
-*   **Testing:** JUnit 5, Testcontainers, Mockito
-*   **Tooling:** Lombok, MapStruct, Gradle
+This is a Spring Boot project that serves as a demonstration and a reusable commons package for building modern REST APIs. The source code is partitioned into a common, reusable package (`src/main/java/com/example/common`) and a demo implementation (`src/main/java/com/example/demo`). It showcases a course enrollment system with users, courses, categories, and enrollments.
 
-## Architecture
+The project uses the following main technologies:
+- **Java 21**
+- **Spring Boot 3.5.6**
+- **Spring Data JPA** with Hibernate for database interaction.
+- **Spring Security** for authentication and authorization, configured as an OAuth2 resource server.
+- **GraphQL** for flexible data queries.
+- **Microsoft SQL Server** as the database.
+- **Gradle** for dependency management and building the project.
+- **MapStruct** for mapping between entities and DTOs.
+- **Lombok** to reduce boilerplate code.
+- **Testcontainers** for integration testing.
+- **OpenAPI Generator** to generate API stubs from a specification.
 
-The project follows a standard layered architecture:
+The architecture is designed to be modular and extensible, with a focus on production-ready patterns like optimistic locking, soft deletes, and audit trails.
 
-*   **Controller Layer:** Exposes the REST and GraphQL endpoints.
-*   **Service Layer:** Contains the business logic.
-*   **Repository Layer:** Handles data access using Spring Data JPA.
-*   **Entity Layer:** Defines the data model.
-*   **DTO Layer:** Data Transfer Objects are used to transfer data between the layers and the client.
+## Building and Running
 
-# Building and Running
+### Prerequisites
 
-## Prerequisites
+- Java 21
+- Docker
 
-*   Java 21
-*   Gradle
-*   Docker (for Testcontainers)
-*   Keycloak (for authentication)
+### Running the Application
 
-## Running the Application
+1.  **Start the database:**
+    The project requires a Microsoft SQL Server database. A Docker Compose file is provided for convenience.
 
-1.  **Set up environment variables:** Create a `.env` file in the root directory and add the following variables:
-
-    ```
-    DATASOURCE_URL=jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=false;trustServerCertificate=true;
-    DATASOURCE_USERNAME=SA
-    DATASOURCE_PASSWORD=<your_password>
-    JWT_ISSUER_URI=http://localhost:8180/realms/dev
+    ```bash
+    docker-compose up -d
     ```
 
 2.  **Run the application:**
+    Use the Gradle wrapper to run the application.
 
     ```bash
-    .\gradlew bootRun
+    ./gradlew bootRun
     ```
 
-The application will be available at `http://localhost:8080`.
+    The application will be available at `http://localhost:8080`.
 
-## Testing the Application
+### Running Tests
 
-The project includes several ways to test the application:
+To run the tests, use the following Gradle command:
 
-*   **Unit Tests:** Run the unit tests with the following command:
+```bash
+./gradlew test
+```
 
-    ```bash
-    .\gradlew test
-    ```
+## Development Conventions
 
-*   **REST API Tests:** The `api.rest`, `testing-guide.md`, and `validation-tests.rest` files contain examples of how to test the REST API using a REST client that supports `.rest` files.
+### Code Style
 
-*   **GraphQL API:** The GraphQL API can be tested using the GraphiQL interface, which is available at `http://localhost:8080/graphiql` when the application is running.
+The project uses the default IntelliJ code style. No specific linter or formatter is enforced in the build process.
 
-# Development Conventions
+### API Development
 
-*   **Code Style:** The project uses the standard Java code style.
-*   **Lombok:** Lombok is used to reduce boilerplate code.
-*   **MapStruct:** MapStruct is used for mapping between DTOs and entities.
-*   **Testing:**
-    *   Unit tests are located in the `src/test/java` directory.
-    *   Testcontainers is used for integration tests that require a database.
-*   **Commits:** Commit messages should follow the conventional commit format.
-*   **Branching:** Feature branches should be created from the `main` branch.
+The project uses an API-first approach. The API is defined in `src/main/resources/openapi.yml`. The OpenAPI Generator is used to generate server-side interfaces and DTOs. When making changes to the API, you should first update the OpenAPI specification and then regenerate the code by running the `openApiGenerate` Gradle task.
+
+### Database Migrations
+
+The project uses Hibernate's `ddl-auto: update` feature to automatically update the database schema. For production environments, a more robust solution like Liquibase or Flyway should be used.
+
+### Commits
+
+Commit messages should be clear and concise, explaining the "why" behind the change, not just the "what".
