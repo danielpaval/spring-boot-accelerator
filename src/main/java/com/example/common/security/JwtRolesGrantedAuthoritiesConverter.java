@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -42,8 +43,8 @@ public class JwtRolesGrantedAuthoritiesConverter implements Converter<Jwt, Colle
             if (i == 0) {
                 current = jwt.getClaim(parts[i]);
             } else {
-                if (current instanceof java.util.Map) {
-                    current = ((java.util.Map<String, Object>) current).get(parts[i]);
+                if (current instanceof Map) {
+                    current = ((Map<String, Object>) current).get(parts[i]);
                 } else {
                     return null;
                 }
