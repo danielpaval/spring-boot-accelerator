@@ -8,12 +8,12 @@ public class SecurityUtils extends CommonSecurityUtils {
 
     public static final String ROLES_CLAIM_PATH = "realm_access.roles";
 
-    public static final String USER_ID_CLAIM_NAME = "user_id";
+    public static final String USER_ID_CLAIM_PATH = "user_id";
 
     public static final String ADMIN_ROLE = "ADMIN";
 
     public static Long getUserId() {
-        return getJwtClaim(USER_ID_CLAIM_NAME, Long.class);
+        return getJwtClaim(USER_ID_CLAIM_PATH, Long.class);
     }
 
     public static boolean isAdmin() {
