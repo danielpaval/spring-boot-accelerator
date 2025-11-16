@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.common.entity.AbstractAutoIncrementCommonEntity;
-import com.example.common.entity.BooleanZeroOneConverter;
+import com.example.common.entity.BooleanToBinaryConverter;
 import com.example.common.entity.DeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -25,7 +25,7 @@ public class User extends AbstractAutoIncrementCommonEntity implements Deletable
     private String name;
 
     @Column(name = "deleted", nullable = false)
-    @Convert(converter = BooleanZeroOneConverter.class)
+    @Convert(converter = BooleanToBinaryConverter.class)
     @Builder.Default
     private boolean deleted = false;
 

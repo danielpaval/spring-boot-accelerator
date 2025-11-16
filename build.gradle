@@ -1,13 +1,13 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.6'
+    id 'org.springframework.boot' version '3.5.7'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.openapi.generator' version '7.16.0'
+    id 'org.openapi.generator' version '7.17.0'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'Accelerator & demo project for Spring Boot'
 
 java {
     toolchain {
@@ -26,7 +26,7 @@ repositories {
 }
 
 ext {
-    //set('springModulithVersion', "1.4.1")
+    set('springModulithVersion', "1.4.1")
     set('testcontainersVersion', "1.19.3")
     set('mapstructVersion', "1.5.5.Final")
 }
@@ -40,9 +40,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    //implementation 'org.springframework.modulith:spring-modulith-starter-core'
+    implementation 'org.springframework.modulith:spring-modulith-starter-core'
+    implementation 'org.springframework.modulith:spring-modulith-starter-jpa'
     implementation 'com.graphql-java:graphql-java-extended-scalars:24.0'
-    //implementation 'org.springframework.modulith:spring-modulith-starter-jpa'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
@@ -51,8 +51,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
-    //runtimeOnly 'org.springframework.modulith:spring-modulith-actuator'
-    //runtimeOnly 'org.springframework.modulith:spring-modulith-observability'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -61,7 +59,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    //testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+    testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:mssqlserver'
@@ -70,14 +68,13 @@ dependencies {
 
 dependencyManagement {
     imports {
-        //mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
+        mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
         mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
     }
 }
 
 test {
     useJUnitPlatform()
-//    enabled = false
 }
 
 // OpenAPI Generator configuration

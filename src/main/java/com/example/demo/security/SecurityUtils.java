@@ -6,11 +6,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtils extends CommonSecurityUtils {
 
-    public static final String ROLES_CLAIM_NAME = "roles";
-    public static final String NAME_CLAIM_NAME = "name";
+    public static final String ROLES_CLAIM_PATH = "realm_access.roles";
+
     public static final String USER_ID_CLAIM_NAME = "user_id";
 
-    public static final String USER_ROLE = "USER";
     public static final String ADMIN_ROLE = "ADMIN";
 
     public static Long getUserId() {
