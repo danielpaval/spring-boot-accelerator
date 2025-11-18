@@ -17,4 +17,9 @@ import org.hibernate.envers.RevisionEntity;
 @Setter
 @NoArgsConstructor
 public class CustomRevisionEntity extends AbstractCommonRevisionEntity<Long> {
+
+    @Override
+    public boolean canEqual(final Object other) {
+        return other instanceof CustomRevisionEntity;
+    }
 }
