@@ -21,11 +21,11 @@ public abstract class AbstractCommonEntity<T extends Serializable> implements Co
 
     @Id
     @Column(name = "id", unique = true, updatable = false, nullable = false)
-    private T id;
+    protected T id;
 
     @Version
     @Column(name = "version")
-    private Integer version = 1;
+    private Integer version;
 
 }
 

@@ -57,9 +57,3 @@ Authorization: Bearer {{$auth.token("oauth2")}}
 
 DELETE {{API_URL}}/api/courses/20004
 Authorization: Bearer {{$auth.token("oauth2")}}
-
-### Delete course (alternative)
-
-DELETE {{API_URL}}/api/courses/7
-Authorization: Bearer {{$auth.token("oauth2")}}
-
