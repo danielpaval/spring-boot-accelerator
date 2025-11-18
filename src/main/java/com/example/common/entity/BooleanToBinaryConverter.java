@@ -4,7 +4,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter
-public class BooleanZeroOneConverter implements AttributeConverter<Boolean, Integer> {
+public class BooleanToBinaryConverter implements AttributeConverter<Boolean, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(Boolean attribute) {

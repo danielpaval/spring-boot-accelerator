@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
 import com.example.common.security.JwtRolesGrantedAuthoritiesConverter;
-import lombok.RequiredArgsConstructor;
+import com.example.demo.security.SecurityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -12,11 +12,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
-
-    private final JwtRolesGrantedAuthoritiesConverter jwtRolesGrantedAuthoritiesConverter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,10 +39,17 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+    @Bean
+    public JwtRolesGrantedAuthoritiesConverter jwtRolesGrantedAuthoritiesConverter() {
+        return new JwtRolesGrantedAuthoritiesConverter(SecurityUtils.ROLES_CLAIM_PATH);
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtRolesGrantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtRolesGrantedAuthoritiesConverter());
         return jwtAuthenticationConverter;
     }
 
 }
+
