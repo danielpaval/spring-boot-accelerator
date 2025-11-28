@@ -20,15 +20,39 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Example implementation using this abstract service for a Category domain:
+ *
+ * <pre>{@code
+ * @Service
+ * @Transactional
+ * public class DefaultCategoryService extends AbstractCommonService<String, Category, CategoryDto, Void> implements CategoryService {
+ *
+ *     public DefaultCategoryService(CategoryRepository repository, CategoryMapper mapper, Validator validator) {
+ *         super(repository, mapper, validator);
+ *     }
+ * }
+ * }</pre>
+ *
+ * Where:
+ *  - {@code Category} extends {@code CommonEntity<String>}
+ *  - {@code CategoryDto} extends {@code CommonDto<String>}
+ *  - {@code CategoryRepository} extends {@code CommonRepository<String, Category>}
+ *  - {@code CategoryMapper} implements {@code CommonMapper<String, Category, CategoryDto, Void>}
+ *
+ * Notes:
+ *  - The fourth generic parameter ({@code PATCH_DTO}) is {@code Void} here because patch operations are not supported for Category.
+ *  - For a patchable entity, replace {@code Void} with a Patch DTO type and implement {@code mapper.patch(patchDto, entity)}.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCommonService<ID extends Serializable, ENTITY extends CommonEntity<ID>, DTO extends CommonDto<ID>, PATCH_DTO> implements CommonService<ID, ENTITY, DTO, PATCH_DTO> {
 
-    private final CommonRepository<ID, ENTITY> commonRepository;
+    protected final CommonRepository<ID, ENTITY> repository;
 
-    private final CommonMapper<ID, ENTITY, DTO, PATCH_DTO> commonMapper;
+    protected final CommonMapper<ID, ENTITY, DTO, PATCH_DTO> mapper;
 
-    private final Validator validator;
+    protected final Validator validator;
 
     @Override
     @Transactional
@@ -38,36 +62,36 @@ public abstract class AbstractCommonService<ID extends Serializable, ENTITY exte
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
-        ENTITY entity = commonMapper.getEntityClass().getDeclaredConstructor().newInstance();
-        commonMapper.update(dto, entity);
+        ENTITY entity = mapper.getEntityClass().getDeclaredConstructor().newInstance();
+        mapper.update(dto, entity);
         if (entity instanceof DeletableEntity deletableEntity) {
             deletableEntity.setDeleted(false);
         }
-        entity = commonRepository.save(entity);
-        return commonMapper.map(entity);
+        entity = repository.save(entity);
+        return mapper.map(entity);
     }
 
     @Override
     public DTO getById(ID id) {
-        ENTITY entity = commonRepository.getReferenceById(id);
-        return commonMapper.map(entity);
+        ENTITY entity = repository.getReferenceById(id);
+        return mapper.map(entity);
     }
 
     @Override
     public Optional<DTO> findById(ID id) {
-        return commonRepository.findById(id).map(commonMapper::map);
+        return repository.findById(id).map(mapper::map);
     }
 
     @Override
     public Page<DTO> findBySpecification(Specification<ENTITY> specification, Pageable pageable) {
-        return commonRepository
+        return repository
                 .findAll(specification, pageable)
-                .map(commonMapper::map);
+                .map(mapper::map);
     }
 
     @Override
     public Long countBySpecification(Specification<ENTITY> specification) {
-        return commonRepository.count(specification);
+        return repository.count(specification);
     }
 
     @Override
@@ -80,27 +104,27 @@ public abstract class AbstractCommonService<ID extends Serializable, ENTITY exte
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
-        ENTITY entity = commonRepository.getReferenceById(id);
+        ENTITY entity = repository.getReferenceById(id);
         if (entity instanceof DeletableEntity deletableEntity && deletableEntity.isDeleted()) {
             throw new IllegalStateException("Cannot update a deleted entity with ID: " + id);
         }
         dto.setId(id);
-        commonMapper.update(dto, entity);
+        mapper.update(dto, entity);
         if (entity instanceof DeletableEntity deletableEntity) {
             deletableEntity.setDeleted(false);
         }
-        ENTITY updatedEntity = commonRepository.save(entity);
-        return commonMapper.map(updatedEntity);
+        ENTITY updatedEntity = repository.save(entity);
+        return mapper.map(updatedEntity);
     }
 
     @Override
     public DTO patch(ID id, PATCH_DTO patchDto) {
-        ENTITY entity = commonRepository.getReferenceById(id);
+        ENTITY entity = repository.getReferenceById(id);
         if (entity instanceof DeletableEntity deletableEntity && deletableEntity.isDeleted()) {
             throw new IllegalStateException("Cannot update a deleted entity with ID: " + id);
         }
-        commonMapper.patch(patchDto, entity);
-        DTO dto = commonMapper.map(entity);
+        mapper.patch(patchDto, entity);
+        DTO dto = mapper.map(entity);
         Set<ConstraintViolation<DTO>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
@@ -108,19 +132,19 @@ public abstract class AbstractCommonService<ID extends Serializable, ENTITY exte
         if (entity instanceof DeletableEntity deletableEntity) {
             deletableEntity.setDeleted(false);
         }
-        ENTITY updatedEntity = commonRepository.save(entity);
-        return commonMapper.map(updatedEntity);
+        ENTITY updatedEntity = repository.save(entity);
+        return mapper.map(updatedEntity);
     }
 
     @Override
     @Transactional
     public void deleteById(ID id) {
-        ENTITY entity = commonRepository.getReferenceById(id);
+        ENTITY entity = repository.getReferenceById(id);
         if (entity instanceof DeletableEntity deletableEntity) {
             deletableEntity.setDeleted(true);
-            commonRepository.save(entity);
+            repository.save(entity);
         } else {
-            commonRepository.deleteById(id);
+            repository.deleteById(id);
         }
     }
 

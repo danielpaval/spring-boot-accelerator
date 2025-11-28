@@ -1,15 +1,16 @@
 package com.example;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.core.ApplicationModule;
+import org.springframework.modulith.core.ApplicationModules;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModularityTests {
 
     @Test
     void onlyDemoDependsOnCommon() {
-        ApplicationModules modules = ApplicationModules.of(SpringBootDemoApplication.class);
+        ApplicationModules modules = ApplicationModules.of("com.example");
         ApplicationModule demoModule = modules.getModuleByName("demo").orElseThrow();
         ApplicationModule commonModule = modules.getModuleByName("common").orElseThrow();
 
