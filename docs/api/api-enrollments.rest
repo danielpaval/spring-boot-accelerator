@@ -1,4 +1,4 @@
-### Find all enrolments
+### Find all enrollments
 
 GET {{API_URL}}/api/enrollments
 Authorization: Bearer {{$auth.token("oauth2")}}
