@@ -1,9 +1,9 @@
-### Get all enrolments
+### Find all enrollments
 
 GET {{API_URL}}/api/enrollments
 Authorization: Bearer {{$auth.token("oauth2")}}
 
-### Add course enrollment
+### Create enrollment
 
 POST {{API_URL}}/api/enrollments
 Content-Type: application/json
@@ -11,9 +11,27 @@ Authorization: Bearer {{$auth.token("oauth2")}}
 
 {
   "id": {
-    "courseId": 2,
-    "studentId": 2
+    "courseId": 3,
+    "studentId": 1
   },
   "date": "2025-09-01T10:00:00Z"
 }
 
+### Update enrollment
+
+POST {{API_URL}}/api/enrollments
+Content-Type: application/json
+Authorization: Bearer {{$auth.token("oauth2")}}
+
+{
+  "id": {
+    "courseId": 3,
+    "studentId": 1
+  },
+  "date": "2025-09-01T10:00:00Z"
+}
+
+### Get enrollment by (composite) ID
+
+GET {{API_URL}}/api/enrollments/3/1
+Authorization: Bearer {{$auth.token("oauth2")}}
