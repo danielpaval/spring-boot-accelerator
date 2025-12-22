@@ -27,5 +27,12 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${JWT_ISSUER_URI:http://localhost:8180/realms/dev}
+          # For Azure AD/Entra ID, the issuer should be:
+          # https://sts.windows.net/{tenant-id}/
+          # or use jwk-set-uri instead for more flexibility
 
 debug: true
+
+application:
+  security:
+    roles-claim-path: ${ROLES_CLAIM_PATH:realm_access.roles}

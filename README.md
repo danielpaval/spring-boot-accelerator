@@ -162,6 +162,38 @@ The application will start on `http://localhost:8080`.
 .\gradlew clean build
 ```
 
+## Building a Container Image
+
+This project uses the Gradle Jib plugin to build OCI images and publish them to GitHub Container Registry (GHCR). The target image defaults to `ghcr.io/<GITHUB_REPOSITORY>`, falling back to `ghcr.io/example-org/spring-boot-api-demo` when the `GITHUB_REPOSITORY` environment variable is not set.
+
+### Authenticate to GHCR
+
+```powershell
+docker login ghcr.io -u <github-username> -p <github-personal-access-token>
+```
+
+The token must include the `write:packages` scope.
+
+### Build and Push
+
+```powershell
+.\gradlew jib
+```
+
+This command builds the image and pushes `latest` plus an additional tag matching the project version.
+
+### Build to Local Docker Daemon
+
+```powershell
+.\gradlew jibDockerBuild
+```
+
+After the image is loaded locally, run it as usual:
+
+```powershell
+docker run --rm -p 8080:8080 -e application.profile=dev ghcr.io/example-org/spring-boot-api-demo:latest
+```
+
 ## API Endpoints
 
 ### REST API

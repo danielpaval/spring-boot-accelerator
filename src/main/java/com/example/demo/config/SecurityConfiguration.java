@@ -1,7 +1,6 @@
 package com.example.demo.config;
 
 import com.example.common.security.JwtRolesGrantedAuthoritiesConverter;
-import com.example.demo.security.SecurityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -14,6 +13,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfiguration {
+
+    private final SecurityProperties securityProperties;
+
+    public SecurityConfiguration(SecurityProperties securityProperties) {
+        this.securityProperties = securityProperties;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,7 +46,7 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtRolesGrantedAuthoritiesConverter jwtRolesGrantedAuthoritiesConverter() {
-        return new JwtRolesGrantedAuthoritiesConverter(SecurityUtils.ROLES_CLAIM_PATH);
+        return new JwtRolesGrantedAuthoritiesConverter(securityProperties.getRolesClaimPath());
     }
 
     @Bean

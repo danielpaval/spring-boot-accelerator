@@ -6,8 +6,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtils extends CommonSecurityUtils {
 
-    public static final String ROLES_CLAIM_PATH = "realm_access.roles";
-
     public static final String USER_ID_CLAIM_PATH = "user_id";
 
     public static final String ADMIN_ROLE = "ADMIN";

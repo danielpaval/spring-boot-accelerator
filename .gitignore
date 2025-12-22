@@ -139,3 +139,6 @@ gradle-app.setting
 
 .env
 http-client.private.env.json
+/docs/azure.md
+/docs/HOURLY-SQL-COSTS.md
+scripts/get-sql-hourly-costs.ps1
