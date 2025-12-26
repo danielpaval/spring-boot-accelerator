@@ -11,7 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect
-        format_sql: true
         envers:
           audit_table_prefix: audit_
           audit_table_suffix:
@@ -30,8 +29,6 @@ spring:
           # For Azure AD/Entra ID, the issuer should be:
           # https://sts.windows.net/{tenant-id}/
           # or use jwk-set-uri instead for more flexibility
-
-debug: true
 
 application:
   security:
