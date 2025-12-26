@@ -37,6 +37,17 @@ public class DefaultUserService extends AbstractCommonService<Long, User, UserDt
         return userRepository.findAll().stream().map(userMapper::map).collect(Collectors.toList());
     }
 
+    @Override
+    public Optional<UserDto> findByExternalId(String externalId) {
+        return userRepository.findByExternalId(externalId)
+                .map(userMapper::map);
+    }
+
+    @Override
+    public Optional<Long> findIdByExternalId(String externalId) {
+        return userRepository.findIdByExternalId(externalId);
+    }
+
     // Audit method implementations
     @Override
     public Optional<Page<Revision<Integer, UserDto>>> findUserRevisions(Long id, Pageable pageable) {

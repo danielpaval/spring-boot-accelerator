@@ -13,5 +13,7 @@ public class SecurityProperties {
 
     private String rolesClaimPath;
 
+    private String externalUserIdClaimPath;
+
 }
 

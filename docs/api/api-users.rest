@@ -10,7 +10,8 @@ Content-Type: application/json
 Authorization: Bearer {{$auth.token("oauth2")}}
 
 {
-  "name": "Test User"
+  "name": "Regular User",
+  "externalId": "2"
 }
 
 ### Create user (error: blank name)

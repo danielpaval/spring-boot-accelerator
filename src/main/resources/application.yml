@@ -36,3 +36,4 @@ debug: true
 application:
   security:
     roles-claim-path: ${ROLES_CLAIM_PATH:realm_access.roles}
+    external-user-id-claim-path: ${EXTERNAL_USER_ID_CLAIM_PATH:user_id}
