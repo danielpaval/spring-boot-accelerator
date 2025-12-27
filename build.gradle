@@ -53,6 +53,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'com.ibm.icu:icu4j:74.2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -114,27 +115,25 @@ sourceSets {
     }
 }
 
-// Ensure code generation happens before compilation
 compileJava.dependsOn tasks.openApiGenerate
 
 tasks.named('bootBuildImage') {
     imageName = 'ghcr.io/danielpaval/spring-boot-accelerator:latest'
+    builder = 'paketobuildpacks/builder-jammy-tiny:latest'
+    // This configuration is used when running './gradlew bootBuildImage'
+    // It passes arguments to the buildpack which then passes them to the native-image builder inside the container.
     environment = [
-        'BP_NATIVE_IMAGE': 'true'
+        'BP_NATIVE_IMAGE': 'true',
+        'BP_NATIVE_IMAGE_BUILD_ARGUMENTS': '-H:+AddAllCharsets'
     ]
 }
 
-jib {
-    from {
-        image = 'eclipse-temurin:21-jre'
-    }
-    to {
-        image = 'ghcr.io/danielpaval/spring-boot-accelerator:latest'
-        tags = [version]
-    }
-    container {
-        mainClass = 'com.example.demo.SpringBootDemoApplication'
-        ports = ['8080']
-        jvmFlags = ['-XX:+UseContainerSupport']
+graalvmNative {
+    binaries {
+        main {
+            // This configuration is used when running './gradlew nativeCompile' or './gradlew nativeTest'
+            // It has no effect on 'bootBuildImage', but we keep it consistent so local builds also work.
+            buildArgs.add('-H:+AddAllCharsets')
+        }
     }
 }

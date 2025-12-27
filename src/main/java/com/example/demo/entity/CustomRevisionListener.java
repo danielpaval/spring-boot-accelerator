@@ -1,10 +1,12 @@
 package com.example.demo.entity;
 
 import com.example.demo.security.SecurityUtils;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.RevisionListener;
 
 @Slf4j
+@NoArgsConstructor
 public class CustomRevisionListener implements RevisionListener {
 
     @Override
@@ -22,4 +24,3 @@ public class CustomRevisionListener implements RevisionListener {
         }
     }
 }
-
