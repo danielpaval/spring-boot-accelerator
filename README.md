@@ -162,6 +162,70 @@ The application will start on `http://localhost:8080`.
 .\gradlew clean build
 ```
 
+## Building a Container Image
+
+This project uses the Gradle Jib plugin to build OCI images and publish them to GitHub Container Registry (GHCR). The target image defaults to `ghcr.io/<GITHUB_REPOSITORY>`, falling back to `ghcr.io/example-org/spring-boot-api-demo` when the `GITHUB_REPOSITORY` environment variable is not set.
+
+### Authenticate to GHCR
+
+```powershell
+docker login ghcr.io -u <github-username> -p <github-personal-access-token>
+```
+
+The token must include the `write:packages` scope.
+
+### Build and Push (Jib)
+
+```powershell
+.\gradlew jib
+```
+
+This command builds the image and pushes `latest` plus an additional tag matching the project version.
+
+### Build to Local Docker Daemon (Jib)
+
+```powershell
+.\gradlew jibDockerBuild
+```
+
+After the image is loaded locally, run it as usual:
+
+```powershell
+docker run --rm -p 8080:8080 -e application.profile=dev ghcr.io/example-org/spring-boot-api-demo:latest
+```
+
+### Boot Build Image (native)
+
+If you prefer Paketo buildpacks and want a native image (GraalVM), use Spring Boot’s `bootBuildImage`. The project is configured to build and tag `ghcr.io/danielpaval/spring-boot-accelerator:latest` and enable native via `BP_NATIVE_IMAGE=true`.
+
+- Build native image locally (no push):
+
+```powershell
+cd C:\Repositories\spring-boot-api-demo; .\gradlew bootBuildImage
+```
+
+- Build and publish to GHCR in one step:
+
+```powershell
+cd C:\Repositories\spring-boot-api-demo; .\gradlew bootBuildImage --publishImage
+```
+
+- Override image name at the CLI (optional):
+
+```powershell
+cd C:\Repositories\spring-boot-api-demo; .\gradlew bootBuildImage --publishImage --imageName=ghcr.io/danielpaval/spring-boot-accelerator:0.0.1-SNAPSHOT
+```
+
+- Retag and push an already built local image (if you created `docker.io/library/spring-boot-accelerator:0.0.1-SNAPSHOT`):
+
+```powershell
+docker tag docker.io/library/spring-boot-accelerator:0.0.1-SNAPSHOT ghcr.io/danielpaval/spring-boot-accelerator:latest; docker push ghcr.io/danielpaval/spring-boot-accelerator:latest
+```
+
+Note:
+- Ensure you’re authenticated to GHCR (via Docker credential helper or `docker login`).
+- Use Jib for JVM images; use `bootBuildImage` for native images. Avoid building both to the same tag concurrently.
+
 ## API Endpoints
 
 ### REST API

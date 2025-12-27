@@ -1,8 +1,10 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.7'
+    id 'org.springframework.boot' version '3.5.9'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.graalvm.buildtools.native' version '0.11.1'
     id 'org.openapi.generator' version '7.17.0'
+    id 'com.google.cloud.tools.jib' version '3.5.2'
 }
 
 group = 'com.example'
@@ -34,7 +36,7 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.data:spring-data-envers'
+    implementation 'org.hibernate.orm:hibernate-envers'
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -51,6 +53,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'com.ibm.icu:icu4j:74.2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -112,5 +115,24 @@ sourceSets {
     }
 }
 
-// Ensure code generation happens before compilation
 compileJava.dependsOn tasks.openApiGenerate
+
+tasks.named('bootBuildImage') {
+    imageName = 'ghcr.io/danielpaval/spring-boot-accelerator:latest'
+    // This configuration is used when running './gradlew bootBuildImage'
+    // It passes arguments to the buildpack which then passes them to the native-image builder inside the container.
+    environment = [
+        'BP_NATIVE_IMAGE': 'true',
+        'BP_NATIVE_IMAGE_BUILD_ARGUMENTS': '-H:+AddAllCharsets'
+    ]
+}
+
+graalvmNative {
+    binaries {
+        main {
+            // This configuration is used when running './gradlew nativeCompile' or './gradlew nativeTest'
+            // It has no effect on 'bootBuildImage', but we keep it consistent so local builds also work.
+            buildArgs.add('-H:+AddAllCharsets')
+        }
+    }
+}

@@ -10,6 +10,7 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "StrongPassword123!"
+      MSSQL_COLLATION: "Latin1_General_100_CI_AS_SC"
     ports:
       - "1433:1433"
     volumes:

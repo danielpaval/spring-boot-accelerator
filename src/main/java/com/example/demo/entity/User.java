@@ -24,6 +24,9 @@ public class User extends AbstractAutoIncrementCommonEntity implements Deletable
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "external_id", nullable = false, unique = true)
+    private String externalId;
+
     @Column(name = "deleted", nullable = false)
     @Convert(converter = BooleanToBinaryConverter.class)
     @Builder.Default

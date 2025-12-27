@@ -15,6 +15,10 @@ public interface UserService extends CommonService<Long, User, UserDto, UserPatc
 
     List<UserDto> findAll();
 
+    Optional<UserDto> findByExternalId(String externalId);
+
+    Optional<Long> findIdByExternalId(String externalId);
+
     // Audit methods
     Optional<Page<Revision<Integer, UserDto>>> findUserRevisions(Long id, Pageable pageable);
     

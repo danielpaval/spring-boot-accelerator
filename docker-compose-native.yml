@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    image: ghcr.io/danielpaval/spring-boot-accelerator:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - DATASOURCE_URL=jdbc:sqlserver://host.docker.internal:1433;databaseName=master;encrypt=false;trustServerCertificate=true;
+      - DATASOURCE_USERNAME=SA
+      - DATASOURCE_PASSWORD=StrongPassword123!
+      - JWT_ISSUER_URI=http://host.docker.internal:8180/realms/dev
+      - ROLES_CLAIM_PATH=realm_access.roles
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

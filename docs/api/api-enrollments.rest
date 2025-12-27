@@ -11,8 +11,8 @@ Authorization: Bearer {{$auth.token("oauth2")}}
 
 {
   "id": {
-    "courseId": 3,
-    "studentId": 1
+    "courseId": 2,
+    "studentId": 2
   },
   "date": "2025-09-01T10:00:00Z"
 }

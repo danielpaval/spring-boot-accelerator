@@ -6,14 +6,30 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtils extends CommonSecurityUtils {
 
-    public static final String ROLES_CLAIM_PATH = "realm_access.roles";
-
-    public static final String USER_ID_CLAIM_PATH = "user_id";
-
     public static final String ADMIN_ROLE = "ADMIN";
 
+    private static SecurityUtilsContext context;
+
+    // Package-private for initialization by SecurityUtilsContext
+    static void setContext(SecurityUtilsContext ctx) {
+        context = ctx;
+    }
+
+    private static SecurityUtilsContext getContext() {
+        if (context == null) {
+            throw new IllegalStateException("SecurityUtils not initialized. Ensure Spring context is loaded.");
+        }
+        return context;
+    }
+
+    public static String getExternalUserId() {
+        return getJwtClaim(getContext().getSecurityProperties().getExternalUserIdClaimPath(), String.class);
+    }
+
     public static Long getUserId() {
-        return getJwtClaim(USER_ID_CLAIM_PATH, Long.class);
+        String externalUserId = getExternalUserId();
+        return getContext().getUserService().findIdByExternalId(externalUserId)
+                .orElseThrow(() -> new IllegalStateException("User not found for external ID: " + externalUserId));
     }
 
     public static boolean isAdmin() {
