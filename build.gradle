@@ -36,7 +36,7 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.data:spring-data-envers'
+    implementation 'org.hibernate.orm:hibernate-envers'
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -119,7 +119,6 @@ compileJava.dependsOn tasks.openApiGenerate
 
 tasks.named('bootBuildImage') {
     imageName = 'ghcr.io/danielpaval/spring-boot-accelerator:latest'
-    builder = 'paketobuildpacks/builder-jammy-tiny:latest'
     // This configuration is used when running './gradlew bootBuildImage'
     // It passes arguments to the buildpack which then passes them to the native-image builder inside the container.
     environment = [

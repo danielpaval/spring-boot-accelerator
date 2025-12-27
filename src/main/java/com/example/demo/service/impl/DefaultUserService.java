@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.generated.dto.UserDto;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.EnversRevisionService;
 import com.example.demo.service.UserService;
 import jakarta.validation.Validator;
 import org.springframework.data.domain.Page;
@@ -26,10 +27,14 @@ public class DefaultUserService extends AbstractCommonService<Long, User, UserDt
 
     private final UserMapper userMapper;
 
-    public DefaultUserService(UserRepository userRepository, UserMapper userMapper, Validator validator) {
+    private final EnversRevisionService enversRevisionService;
+
+    public DefaultUserService(UserRepository userRepository, UserMapper userMapper,
+                              Validator validator, EnversRevisionService enversRevisionService) {
         super(userRepository, userMapper, validator);
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.enversRevisionService = enversRevisionService;
     }
 
     @Override
@@ -54,8 +59,8 @@ public class DefaultUserService extends AbstractCommonService<Long, User, UserDt
         if (!userRepository.existsById(id)) {
             return Optional.empty();
         }
-        Page<Revision<Integer, User>> revisions = userRepository.findRevisions(id, pageable);
-        Page<Revision<Integer, UserDto>> dtoRevisions = revisions.map(revision -> 
+        Page<Revision<Integer, User>> revisions = enversRevisionService.findRevisions(User.class, id, pageable);
+        Page<Revision<Integer, UserDto>> dtoRevisions = revisions.map(revision ->
             Revision.of(revision.getMetadata(), userMapper.map(revision.getEntity()))
         );
         return Optional.of(dtoRevisions);
@@ -63,13 +68,13 @@ public class DefaultUserService extends AbstractCommonService<Long, User, UserDt
 
     @Override
     public Optional<Revision<Integer, UserDto>> findUserRevision(Long id, Integer revisionNumber) {
-        return userRepository.findRevision(id, revisionNumber)
+        return enversRevisionService.findRevision(User.class, id, revisionNumber)
                 .map(revision -> Revision.of(revision.getMetadata(), userMapper.map(revision.getEntity())));
     }
 
     @Override
     public Optional<Revision<Integer, UserDto>> findLatestUserRevision(Long id) {
-        return userRepository.findLastChangeRevision(id)
+        return enversRevisionService.findLastChangeRevision(User.class, id)
                 .map(revision -> Revision.of(revision.getMetadata(), userMapper.map(revision.getEntity())));
     }
 

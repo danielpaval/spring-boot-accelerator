@@ -33,13 +33,16 @@ class UserServiceTest {
     private Validator validator;
 
     @Mock
+    private EnversRevisionService enversRevisionService;
+
+    @Mock
     private ConstraintViolation<UserDto> constraintViolation;
 
     private DefaultUserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new DefaultUserService(userRepository, userMapper, validator);
+        userService = new DefaultUserService(userRepository, userMapper, validator, enversRevisionService);
     }
 
     @Test

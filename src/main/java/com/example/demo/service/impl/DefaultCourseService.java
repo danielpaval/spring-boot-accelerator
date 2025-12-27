@@ -9,6 +9,7 @@ import com.example.demo.mapper.CourseMapper;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.security.SecurityUtils;
 import com.example.demo.service.CourseService;
+import com.example.demo.service.EnversRevisionService;
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import jakarta.validation.Validator;
 import org.springframework.data.domain.Page;
@@ -28,10 +29,14 @@ public class DefaultCourseService extends AbstractCommonService<Long, Course, Co
 
     private final CourseMapper courseMapper;
 
-    public DefaultCourseService(CourseRepository courseRepository, CourseMapper courseMapper, Validator validator) {
+    private final EnversRevisionService enversRevisionService;
+
+    public DefaultCourseService(CourseRepository courseRepository, CourseMapper courseMapper,
+                                Validator validator, EnversRevisionService enversRevisionService) {
         super(courseRepository, courseMapper, validator);
         this.courseRepository = courseRepository;
         this.courseMapper = courseMapper;
+        this.enversRevisionService = enversRevisionService;
     }
 
     @Override
@@ -78,7 +83,7 @@ public class DefaultCourseService extends AbstractCommonService<Long, Course, Co
         if (!courseRepository.existsById(id)) {
             return Optional.empty();
         }
-        Page<Revision<Integer, Course>> revisions = courseRepository.findRevisions(id, pageable);
+        Page<Revision<Integer, Course>> revisions = enversRevisionService.findRevisions(Course.class, id, pageable);
         Page<Revision<Integer, CourseDto>> dtoRevisions = revisions.map(revision ->
                 Revision.of(revision.getMetadata(), courseMapper.map(revision.getEntity()))
         );
@@ -87,13 +92,13 @@ public class DefaultCourseService extends AbstractCommonService<Long, Course, Co
 
     @Override
     public Optional<Revision<Integer, CourseDto>> findCourseRevision(Long id, Integer revisionNumber) {
-        return courseRepository.findRevision(id, revisionNumber)
+        return enversRevisionService.findRevision(Course.class, id, revisionNumber)
                 .map(revision -> Revision.of(revision.getMetadata(), courseMapper.map(revision.getEntity())));
     }
 
     @Override
     public Optional<Revision<Integer, CourseDto>> findLatestCourseRevision(Long id) {
-        return courseRepository.findLastChangeRevision(id)
+        return enversRevisionService.findLastChangeRevision(Course.class, id)
                 .map(revision -> Revision.of(revision.getMetadata(), courseMapper.map(revision.getEntity())));
     }
 
